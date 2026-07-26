@@ -28,6 +28,13 @@ int maze[ROWS][COLS] = {
 
 double mazeProb[ROWS][COLS] = {};   // buffer maze for storing probabilities
 
+enum dir{
+    WEST = 0,
+    NORTH = 1,
+    EAST = 2,
+    SOUTH = 3
+};
+
 // parses maze to a readable output
 void printMaze(int m[ROWS][COLS]){
     for(int r = 0; r < ROWS; r++){
