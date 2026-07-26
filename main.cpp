@@ -98,6 +98,15 @@ void checkSurroundings(int r, int c, int surroundings[4]){
     // TODO IMPLEMENT
 }
 
+// gets probability from sensor output based on
+// actual obstacle && observed obstacle status
+double getSenseProb(int actual, int observed){
+    if(actual == 1 && observed == 1){return DETECT_OBSTACLE;}   // sensor sees obstacle, obstacle is actually there
+    else if(actual == 1 && observed == 0){return 1.0 - DETECT_OBSTACLE;} // sensor doesnt see obstacle, obstacle is actually there
+    else if(actual == 0 && observed == 0){return DETECT_OBSTACLE_FALSE;}    // sensor doesnt see obstacle, no obstacle is actually there
+    return 1.0 - DETECT_OBSTACLE_FALSE; // sensor sees obstacle, but its not actually there
+}
+
 void exploreMaze(){
     int total = getTotal();
     int open = getOpen();
