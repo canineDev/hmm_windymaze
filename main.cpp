@@ -42,7 +42,7 @@ void printMaze(int m[ROWS][COLS]){
         for(int c = 0; c < COLS; c++){
             if(m[r][c] == 1){cout << "#### ";}
             else if(m[r][c] == 0){cout << "[  ] ";}
-            else{cout << fixed << setprecision(2) << m[r][c] << " ";}
+            else{cout << fixed << setprecision(2) << m[r][c] * 100 << " ";}
         }
         cout << endl;
     }
@@ -54,25 +54,12 @@ void printMaze(double m[ROWS][COLS]){
     for(int r = 0; r < ROWS; r++){
         for(int c = 0; c < COLS; c++){
             if(maze[r][c] == 1){cout << "#### ";}
-            else{cout << fixed << setprecision(2) << m[r][c] << " ";}
+            else{cout << fixed << setprecision(2) << m[r][c] * 100.0 << " ";}
         }
         cout << endl;
     }
     cout << endl;
 };
-
-
-int getTotal(){return (ROWS*COLS);} // returns total squares in maze
-
-int getObstacles(){ // returns obstacles in maze
-    int obstacles = 0;
-    for(int r = 0; r < ROWS; r++){
-        for(int c = 0; c < COLS; c++){
-            if(maze[r][c] == 1){obstacles++;}
-        }
-    }
-    return obstacles;
-}
 
 int getOpen(){  // returns open squares in maze
     int open = 0;
@@ -85,7 +72,7 @@ int getOpen(){  // returns open squares in maze
 }
 
 // returns probability of current pos
-double getProb(int t, int op, int ob){
+double getProb(int op){
     if(op == 0){return 0.0;} // incase theres no open squares?
     return 1.0/op;
 }
@@ -175,48 +162,125 @@ void distProb(int r, int c, int rDest, int cDest, double p){
     else{nextProb[rDest][cDest] += p;}
 }
 
-void exploreMaze(){
-    int total = getTotal();
+void predictMovement(int intDir){
+    clearNextProb();
+
+    for(int r = 0; r < ROWS; r++){
+        for(int c = 0; c < COLS; c++){
+            if(maze[r][c] == 1){continue;}
+            double current = mazeProb[r][c];
+            int straightRow = r;
+            int straightCol = c;
+            int leftRow = r;
+            int leftCol = c;
+            int rightRow = r;
+            int rightCol = c;
+
+            if(intDir == NORTH){
+                straightRow = r - 1;
+                straightCol = c;
+                leftRow = r;
+                leftCol = c - 1;
+                rightRow = r;
+                rightCol = c + 1;
+            }
+            else if(intDir == EAST){
+                straightRow = r;
+                straightCol = c + 1;
+
+                leftRow = r - 1;
+                leftCol = c;
+
+                rightRow = r + 1;
+                rightCol = c;
+            }
+            else if(intDir == SOUTH){
+                straightRow = r + 1;
+                straightCol = c;
+                leftRow = r;
+                leftCol = c + 1;
+                rightRow = r;
+                rightCol = c - 1;
+            }
+            else if(intDir == WEST){
+                straightRow = r;
+                straightCol = c - 1;
+                leftRow = r + 1;
+                leftCol = c;
+                rightRow = r - 1;
+                rightCol = c;
+            }
+
+            distProb(r, c, straightRow, straightCol, current * MOVEMENT_STRAIGHT);
+            distProb(r, c, leftRow, leftCol, current * MOVEMENT_LEFT);
+            distProb(r, c, rightRow, rightCol, current * MOVEMENT_RIGHT);
+        }
+    }
+
+    // copy completed prediction maze back
+    for(int r = 0; r < ROWS; r++){
+        for(int c = 0; c < COLS; c++){
+            mazeProb[r][c] = nextProb[r][c];
+        }
+    }
+
+    normalize();
+}
+
+void initProb()
+{
     int open = getOpen();
-    int obstacles = getObstacles();
+    double initialProbability = getProb(open);
+
     for(int r = 0; r < ROWS; r++){
         for(int c = 0; c < COLS; c++){
             if(maze[r][c] == 0){
-                mazeProb[r][c] = getProb(total, open, obstacles)*100;
+                mazeProb[r][c] = initialProbability;
             }
             else{
-                mazeProb[r][c] = 1;
+                mazeProb[r][c] = 0.0;
             }
         }
     }
+}
+
+void exploreMaze(){
+    initProb();
     cout << "Initial Location Probabilities: " << endl;
     printMaze(mazeProb);
 
-    // South
-    int evidence[4] = {0, 0, 0, 1};
+    int evidence1[4] = {0, 0, 0, 1};
+    int evidence2[4] = {1, 0, 0, 0};
+    int evidence3[4] = {1, 1, 0, 0};
+    int evidence4[4] = {0, 1, 1, 0};
+
     cout << "Filtering after Evidence [0, 0, 0, 1]: " << endl;
-    filter(evidence);
+    filter(evidence1);
     printMaze(mazeProb);
 
-    /*
     cout << "Prediction after Action N: " << endl;
-    printMaze();
+    predictMovement(NORTH);
+    printMaze(mazeProb);
 
     cout << "Filtering after Evidence [1, 0, 0, 0]: " << endl;
-    printMaze();
+    filter(evidence2);
+    printMaze(mazeProb);
 
     cout << "Prediction after Action N: " << endl;
-    printMaze();
+    predictMovement(NORTH);
+    printMaze(mazeProb);
 
     cout << "Filtering after Evidence [1, 1, 0, 0]: " << endl;
-    printMaze();
+    filter(evidence3);
+    printMaze(mazeProb);
 
     cout << "Prediction after Action E: " << endl;
-    printMaze();
+    predictMovement(EAST);
+    printMaze(mazeProb);
 
     cout << "Filtering after Evidence [0, 1, 1, 0]: " << endl;
-    printMaze();
-    */
+    filter(evidence4);
+    printMaze(mazeProb);
 }
 
 int main(){
