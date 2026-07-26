@@ -68,7 +68,6 @@ double getProb(int t, int op, int ob){
 }
 
 void exploreMaze(){
-    cout << "Initial Maze: " << endl;
     printMaze();
     int total = getTotal();
     int open = getOpen();
@@ -79,7 +78,30 @@ void exploreMaze(){
                 maze[r][c] = getProb(total, open, obstacles)*100;
         }
     }
-    cout << "(PLACEHOLDER) Maze with probabilities: " << endl;
+    cout << "Initial Location Probabilities: " << endl;
+    printMaze();
+
+    // TODO
+
+    cout << "Filtering after Evidence [0, 0, 0, 1]: " << endl;
+    printMaze();
+
+    cout << "Prediction after Action N: " << endl;
+    printMaze();
+
+    cout << "Filtering after Evidence [1, 0, 0, 0]: " << endl;
+    printMaze();
+
+    cout << "Prediction after Action N: " << endl;
+    printMaze();
+
+    cout << "Filtering after Evidence [1, 1, 0, 0]: " << endl;
+    printMaze();
+
+    cout << "Prediction after Action E: " << endl;
+    printMaze();
+
+    cout << "Filtering after Evidence [0, 1, 1, 0]: " << endl;
     printMaze();
 }
 
