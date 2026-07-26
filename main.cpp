@@ -76,17 +76,25 @@ int getOpen(){  // returns open squares in maze
     return open;
 }
 
+// returns probability of current pos
 double getProb(int t, int op, int ob){
     if(op == 0){return 0.0;} // incase theres no open squares?
     return 1.0/op;
 }
 
+// true if an obstacle
 bool isObstacle(int r, int c){
     if(r < 0 || r >= ROWS || c <0 || c >= COLS){return true;}   // check bounds, outside of maze is an obstacle too :^)
     return maze[r][c] == 1; // 1 is an obstacle, so return true
 }
 
-void checkSurroundings(int r, int c){
+// use sensors to identify surroundings
+// [0, 1, 2, 3] = [West, North, East, South]
+void checkSurroundings(int r, int c, int surroundings[4]){
+    surroundings[0] = isObstacle(r, c - 1);
+    surroundings[1] = isObstacle(r - 1, c);
+    surroundings[2] = isObstacle(r, c + 1);
+    surroundings[3] = isObstacle(r + 1, c);
     // TODO IMPLEMENT
 }
 
