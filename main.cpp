@@ -63,7 +63,7 @@ int getOpen(){  // returns open squares in maze
 }
 
 double getProb(int t, int op, int ob){
-    if(op == 0){return 0.0;} // incase its zero for whatever reason
+    if(op == 0){return 0.0;} // incase theres no open squares?
     return 1.0/op;
 }
 
