@@ -27,6 +27,7 @@ int maze[ROWS][COLS] = {
 };
 
 double mazeProb[ROWS][COLS] = {};   // buffer maze for storing probabilities
+double nextProb[ROWS][COLS] = {};   // buffer for the buffer lol
 
 enum dir{
     WEST = 0,
@@ -98,10 +99,10 @@ bool isObstacle(int r, int c){
 // use sensors to identify surroundings
 // [0, 1, 2, 3] = [West, North, East, South]
 void checkSurroundings(int r, int c, int surroundings[4]){
-    surroundings[0] = isObstacle(r, c - 1);
-    surroundings[1] = isObstacle(r - 1, c);
-    surroundings[2] = isObstacle(r, c + 1);
-    surroundings[3] = isObstacle(r + 1, c);
+    surroundings[WEST] = isObstacle(r, c - 1);
+    surroundings[NORTH] = isObstacle(r - 1, c);
+    surroundings[EAST] = isObstacle(r, c + 1);
+    surroundings[SOUTH] = isObstacle(r + 1, c);
     // TODO IMPLEMENT
 }
 
@@ -110,8 +111,8 @@ void checkSurroundings(int r, int c, int surroundings[4]){
 double getSenseProb(int actual, int observed){
     if(actual == 1 && observed == 1){return DETECT_OBSTACLE;}   // sensor sees obstacle, obstacle is actually there
     else if(actual == 1 && observed == 0){return 1.0 - DETECT_OBSTACLE;} // sensor doesnt see obstacle, obstacle is actually there
-    else if(actual == 0 && observed == 0){return DETECT_OBSTACLE_FALSE;}    // sensor doesnt see obstacle, no obstacle is actually there
-    return 1.0 - DETECT_OBSTACLE_FALSE; // sensor sees obstacle, but its not actually there
+    else if(actual == 0 && observed == 1){return DETECT_OBSTACLE_FALSE;}    // sensor sees obstacle, no obstacle is actually there
+    return 1.0 - DETECT_OBSTACLE_FALSE; // sensor correctly doesnt see obstacle
 }
 
 double getEvidenceLikliehood(int r, int c, const int evidence[4]){
@@ -159,6 +160,20 @@ void filter(const int evidence[4]){
     normalize();
 }
 
+// clears out the next buffer
+void clearNextProb(){
+    for(int r = 0; r < ROWS; r++){
+        for(int c = 0; c < COLS; c++){
+            nextProb[r][c] = 0.0;
+        }
+    }
+}
+
+// moves one portion of probability
+void distProb(int r, int c, int rDest, int cDest, double p){
+    if(isObstacle(rDest, cDest)){nextProb[r][c] += p;}
+    else{nextProb[rDest][cDest] += p;}
+}
 
 void exploreMaze(){
     int total = getTotal();
