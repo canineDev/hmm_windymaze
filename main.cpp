@@ -119,6 +119,27 @@ double getEvidenceLikliehood(int r, int c, const int evidence[4]){
     return likelihood;
 }
 
+void normalize(){
+    double total = 0.0;
+    for(int r = 0; r < ROWS; r++){
+        for(int c = 0; c < COLS; c++){
+            if(maze[r][c] == 0){
+                total += mazeProb[r][c];
+            }
+        }
+    }
+
+    if(total == 0.0){return;}
+
+    for(int r = 0; r < ROWS; r++){
+        for(int c = 0; c < COLS; c++){
+            if(maze[r][c] == 0){
+                mazeProb[r][c] /= total;
+            }
+        }
+    }
+}
+
 void filter(const int evidence[4]){
     for(int r=0; r<ROWS; r++){
         for(int c=0; c<COLS; c++){
@@ -128,7 +149,9 @@ void filter(const int evidence[4]){
             }
         }
     }
+    normalize();
 }
+
 
 void exploreMaze(){
     int total = getTotal();
@@ -147,9 +170,10 @@ void exploreMaze(){
     cout << "Initial Location Probabilities: " << endl;
     printMaze(mazeProb);
 
-    // TODO
+    // South
     int evidence[4] = {0, 0, 0, 1};
     cout << "Filtering after Evidence [0, 0, 0, 1]: " << endl;
+    filter(evidence);
     printMaze(mazeProb);
 
     /*
