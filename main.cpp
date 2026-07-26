@@ -107,6 +107,29 @@ double getSenseProb(int actual, int observed){
     return 1.0 - DETECT_OBSTACLE_FALSE; // sensor sees obstacle, but its not actually there
 }
 
+double getEvidenceLikliehood(int r, int c, const int evidence[4]){
+    int surroundings[4];
+    checkSurroundings(r, c, surroundings);
+    double likelihood = 1.0;
+
+    for(int dir = 0; dir < 4; dir++){
+        likelihood *= getSenseProb(surroundings[dir], evidence[dir]);
+    }
+
+    return likelihood;
+}
+
+void filter(const int evidence[4]){
+    for(int r=0; r<ROWS; r++){
+        for(int c=0; c<COLS; c++){
+            if(maze[r][c] == 0){
+                double likelihood = getEvidenceLikliehood(r, c, evidence);
+                mazeProb[r][c] *= likelihood;
+            }
+        }
+    }
+}
+
 void exploreMaze(){
     int total = getTotal();
     int open = getOpen();
@@ -125,10 +148,11 @@ void exploreMaze(){
     printMaze(mazeProb);
 
     // TODO
-    /*
+    int evidence[4] = {0, 0, 0, 1};
     cout << "Filtering after Evidence [0, 0, 0, 1]: " << endl;
-    printMaze();
+    printMaze(mazeProb);
 
+    /*
     cout << "Prediction after Action N: " << endl;
     printMaze();
 
