@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <iomanip>
 
 // maze definitions
 #define ROWS 5
@@ -17,7 +18,7 @@ using namespace std;    // bc im lazy
 // maze i made using a 2D int
 // open spaces = 0
 // obstacles = 1
-int maze[ROWS][COLS] = {
+double maze[ROWS][COLS] = {
     {0, 0, 0, 0, 0, 0},
     {0, 1, 1, 1, 1, 0},
     {0, 1, 0, 0, 1, 0},
@@ -31,30 +32,58 @@ void printMaze(){
         for(int c = 0; c < COLS; c++){
             if(maze[r][c] == 1){cout << "#### ";}
             else if(maze[r][c] == 0){cout << "[  ] ";}
-            else{cout << maze[r][c] << " ";}
+            else{cout << fixed << setprecision(2) << maze[r][c] << " ";}
         }
         cout << endl;
     }
     cout << endl;
 };
 
-void initProbabilities(){   // WIP displaying stats first
-    int total = (ROWS*COLS); // get total squares
-    int obstacles = 0, open = 0;
+
+int getTotal(){return (ROWS*COLS);} // returns total squares in maze
+
+int getObstacles(){ // returns obstacles in maze
+    int obstacles = 0;
+    for(int r = 0; r < ROWS; r++){
+        for(int c = 0; c < COLS; c++){
+            if(maze[r][c] == 1){obstacles++;}
+        }
+    }
+    return obstacles;
+}
+
+int getOpen(){  // returns open squares in maze
+    int open = 0;
     for(int r = 0; r < ROWS; r++){
         for(int c = 0; c < COLS; c++){
             if(maze[r][c] == 0){open++;}
-            else{obstacles++;}
         }
     }
-    cout << "MAZE INFO:" << endl
-    << "TOTAL SQUARES = " << total << endl
-    << "TOTAL OPEN SQUARES = " << open << endl
-    << "TOTAL OBSTACLES = " << obstacles << endl;
+    return open;
+}
+
+double getProb(int t, int op, int ob){
+    if(op == 0){return 0.0;} // incase its zero for whatever reason
+    return 1.0/op;
+}
+
+void exploreMaze(){
+    cout << "Initial Maze: " << endl;
+    printMaze();
+    int total = getTotal();
+    int open = getOpen();
+    int obstacles = getObstacles();
+    for(int r = 0; r < ROWS; r++){
+        for(int c = 0; c < COLS; c++){
+            cout << "getting prob" << endl;
+            maze[r][c] = getProb(total, open, obstacles)*100;
+        }
+    }
+    cout << "(PLACEHOLDER) Maze with probabilities: " << endl;
+    printMaze();
 }
 
 int main(){
-    printMaze();
-    initProbabilities();
+    exploreMaze();
     return 0;
 }
