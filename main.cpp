@@ -18,7 +18,7 @@ using namespace std;    // bc im lazy
 // maze i made using a 2D int
 // open spaces = 0
 // obstacles = 1
-double maze[ROWS][COLS] = {
+int maze[ROWS][COLS] = {
     {0, 0, 0, 0, 0, 0},
     {0, 1, 1, 1, 1, 0},
     {0, 1, 0, 0, 1, 0},
@@ -26,13 +26,27 @@ double maze[ROWS][COLS] = {
     {0, 0, 0, 0, 0, 0},
 };
 
+double mazeProb[ROWS][COLS] = {};   // buffer maze for storing probabilities
+
 // parses maze to a readable output
-void printMaze(){
+void printMaze(int m[ROWS][COLS]){
+    for(int r = 0; r < ROWS; r++){
+        for(int c = 0; c < COLS; c++){
+            if(m[r][c] == 1){cout << "#### ";}
+            else if(m[r][c] == 0){cout << "[  ] ";}
+            else{cout << fixed << setprecision(2) << m[r][c] << " ";}
+        }
+        cout << endl;
+    }
+    cout << endl;
+};
+
+// overload function for prob buffer maze
+void printMaze(double m[ROWS][COLS]){
     for(int r = 0; r < ROWS; r++){
         for(int c = 0; c < COLS; c++){
             if(maze[r][c] == 1){cout << "#### ";}
-            else if(maze[r][c] == 0){cout << "[  ] ";}
-            else{cout << fixed << setprecision(2) << maze[r][c] << " ";}
+            else{cout << fixed << setprecision(2) << m[r][c] << " ";}
         }
         cout << endl;
     }
@@ -68,21 +82,24 @@ double getProb(int t, int op, int ob){
 }
 
 void exploreMaze(){
-    printMaze();
     int total = getTotal();
     int open = getOpen();
     int obstacles = getObstacles();
     for(int r = 0; r < ROWS; r++){
         for(int c = 0; c < COLS; c++){
-            if(maze[r][c] == 0)
-                maze[r][c] = getProb(total, open, obstacles)*100;
+            if(maze[r][c] == 0){
+                mazeProb[r][c] = getProb(total, open, obstacles)*100;
+            }
+            else{
+                mazeProb[r][c] = 1;
+            }
         }
     }
     cout << "Initial Location Probabilities: " << endl;
-    printMaze();
+    printMaze(mazeProb);
 
     // TODO
-
+    /*
     cout << "Filtering after Evidence [0, 0, 0, 1]: " << endl;
     printMaze();
 
@@ -103,6 +120,7 @@ void exploreMaze(){
 
     cout << "Filtering after Evidence [0, 1, 1, 0]: " << endl;
     printMaze();
+    */
 }
 
 int main(){
