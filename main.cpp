@@ -81,6 +81,15 @@ double getProb(int t, int op, int ob){
     return 1.0/op;
 }
 
+bool isObstacle(int r, int c){
+    if(r < 0 || r >= ROWS || c <0 || c >= COLS){return true;}   // check bounds, outside of maze is an obstacle too :^)
+    return maze[r][c] == 1; // 1 is an obstacle, so return true
+}
+
+void checkSurroundings(int r, int c){
+    // TODO IMPLEMENT
+}
+
 void exploreMaze(){
     int total = getTotal();
     int open = getOpen();
