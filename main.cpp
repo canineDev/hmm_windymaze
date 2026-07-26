@@ -4,8 +4,6 @@
 // maze definitions
 #define ROWS 5
 #define COLS 6
-#define START_ROW 0
-#define START_COL 0
 
 // probabilities
 constexpr double DETECT_OBSTACLE = 0.95;    // chance to correctly detects an obstacle
@@ -32,14 +30,31 @@ void printMaze(){
     for(int r = 0; r < ROWS; r++){
         for(int c = 0; c < COLS; c++){
             if(maze[r][c] == 1){cout << "#### ";}
-            else{cout << "[  ] ";}
+            else if(maze[r][c] == 0){cout << "[  ] ";}
+            else{cout << maze[r][c] << " ";}
         }
         cout << endl;
     }
     cout << endl;
 };
 
+void initProbabilities(){   // WIP displaying stats first
+    int total = (ROWS*COLS); // get total squares
+    int obstacles = 0, open = 0;
+    for(int r = 0; r < ROWS; r++){
+        for(int c = 0; c < COLS; c++){
+            if(maze[r][c] == 0){open++;}
+            else{obstacles++;}
+        }
+    }
+    cout << "MAZE INFO:" << endl
+    << "TOTAL SQUARES = " << total << endl
+    << "TOTAL OPEN SQUARES = " << open << endl
+    << "TOTAL OBSTACLES = " << obstacles << endl;
+}
+
 int main(){
     printMaze();
+    initProbabilities();
     return 0;
 }
