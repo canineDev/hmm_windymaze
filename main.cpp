@@ -90,7 +90,6 @@ void checkSurroundings(int r, int c, int surroundings[4]){
     surroundings[NORTH] = isObstacle(r - 1, c);
     surroundings[EAST] = isObstacle(r, c + 1);
     surroundings[SOUTH] = isObstacle(r + 1, c);
-    // TODO IMPLEMENT
 }
 
 // gets probability from sensor output based on
