@@ -75,8 +75,8 @@ void exploreMaze(){
     int obstacles = getObstacles();
     for(int r = 0; r < ROWS; r++){
         for(int c = 0; c < COLS; c++){
-            cout << "getting prob" << endl;
-            maze[r][c] = getProb(total, open, obstacles)*100;
+            if(maze[r][c] == 0)
+                maze[r][c] = getProb(total, open, obstacles)*100;
         }
     }
     cout << "(PLACEHOLDER) Maze with probabilities: " << endl;
